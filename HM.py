@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+from datetime import datetime
 
 #Open the file
 raw_corpus = pd.read_csv('Shakespeare_data.csv')
@@ -29,4 +30,40 @@ for i in lineOlines:
     else:
         word_count[i]=1
 
-x = np.array(word_count.keys())
+#Now I have every word mapped to a unique index
+x = np.array(list(word_count.keys()))
+
+#Create a blank transition table
+transition = np.zeros((len(x),len(x)))
+
+print("Begin raw transition table " + str(transition.shape))
+
+startTime = datetime.now()
+
+#Populate the transition table with raw counts
+for i in range(1,len(lineOlines)):
+
+    current_index = np.where(x == lineOlines[i])[0][0]
+
+    past_index = np.where(x == lineOlines[i-1])[0][0]
+
+    transition[current_index][past_index] += 1
+
+print("End raw transition table " + str(datetime.now() - startTime))
+
+choice = 0
+while(True):
+    print("1: Generate New Text")
+    print("2: Text Prediction")
+    print("3: Exit")
+    choice = int(input("Please Select an option: "))
+
+    if choice == 1:
+        print("Choice 1")
+        break
+    if choice == 2:
+        print("Choice 2")
+        break
+    if choice == 3:
+        print("Choice 3")
+        break
