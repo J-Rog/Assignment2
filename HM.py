@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 from datetime import datetime
+import random
 
 #Open the file
 raw_corpus = pd.read_csv('Shakespeare_data.csv')
@@ -17,7 +18,7 @@ for i in range(0,len(lines)):
     #Turn each sententce into a list
     target = lines[i].split()
 
-    #Create a 1d array of all lines
+    #Create a 1d list of all lines
     for j in target:
         lineOlines.append(j)
 
@@ -33,8 +34,10 @@ for i in lineOlines:
 #Now I have every word mapped to a unique index
 x = np.array(list(word_count.keys()))
 
-#Create a blank transition table
+#Create a blank transition table of size 27381 x 27381
 transition = np.zeros((len(x),len(x)))
+
+print("Transition shape is " + str(np.shape(transition)))
 
 startTime = datetime.now()
 
@@ -47,7 +50,7 @@ for i in range(1,len(lineOlines)):
 
     past_index = np.where(x == lineOlines[i-1])[0][0]
 
-    transition[current_index][past_index] += 1
+    transition[past_index][current_index] += 1
 
 print("End raw transition table " + str(datetime.now() - startTime))
 
@@ -76,7 +79,38 @@ while(True):
     choice = int(input("Please Select an option: "))
 
     if choice == 1:
-        print("Choice 1: New Text")
+        #Get a random word to begin the sequence
+        seed = random.randint(0,len(x)-1)
+
+        #Get how many words the user wants
+        number_of_words = int(input("How many words would you like: "))
+
+        #Word is an np array so the where command works later
+        word = np.array([x[seed]])
+        word_list = [word[0]]
+
+        for i in range(0, number_of_words - 1):
+
+            try:
+                queary = np.where(x == word[0])[0][0]
+            except Exception:
+                pass
+            print(queary)
+            word[0] = x[np.argmax(transition[queary])]
+            word_list.append(word[0])
+
+        print("Your new text is: ", end = " ")
+
+        for i in range(0, number_of_words):
+            print(word_list[i] + " ", end = " ")
+
+        print(" ")
+
+
+
+
+
+
     if choice == 2:
         print("Choice 2: Predict Text")
     if choice == 3:
