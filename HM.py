@@ -36,9 +36,9 @@ x = np.array(list(word_count.keys()))
 #Create a blank transition table
 transition = np.zeros((len(x),len(x)))
 
-print("Begin raw transition table " + str(transition.shape))
-
 startTime = datetime.now()
+
+print("Begin raw transition table " + str(startTime))
 
 #Populate the transition table with raw counts
 for i in range(1,len(lineOlines)):
@@ -51,6 +51,23 @@ for i in range(1,len(lineOlines)):
 
 print("End raw transition table " + str(datetime.now() - startTime))
 
+
+#Convert raw data into probabilities
+startTime = datetime.now()
+print("Begin probability table " + str(startTime))
+
+for i in range(0,len(x)):
+
+    row_total = sum(transition[i])
+
+    for j in range(0,len(x)):
+
+        transition[i][j] = transition[i][j]/row_total
+
+print("End probability table " + str(datetime.now() - startTime))
+
+
+
 choice = 0
 while(True):
     print("1: Generate New Text")
@@ -59,11 +76,9 @@ while(True):
     choice = int(input("Please Select an option: "))
 
     if choice == 1:
-        print("Choice 1")
-        break
+        print("Choice 1: New Text")
     if choice == 2:
-        print("Choice 2")
-        break
+        print("Choice 2: Predict Text")
     if choice == 3:
-        print("Choice 3")
+        print("Choice 3: Exit")
         break
