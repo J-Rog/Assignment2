@@ -161,7 +161,7 @@ while(True):
 
             elif corpus[i] in x:
                 state = 0 #Novel
-                novel.append(word)
+                novel.append(corpus[i])
 
             else: #corpus[i] not in Shakespeare_data
                 state = 0 #Novel
@@ -180,12 +180,62 @@ while(True):
 
         #Corpus probability found
 
-        prediction_num = int(input("How many words would you like to predict"))
+        # Get the most likely word given what we know
 
-        for i in range(0, prediction_num):
+        path = []
+        temp = []
+
+        try:
+            queary = np.where(x == corpus[len(corpus)-1])[0][0]
+        except Exception:
+            pass
+
+        for j in range(0,3):
+
+            path.append(np.argmax(emission[queary])) #Get most likely next word
+            temp.append(emission[queary][np.argmax(emission[queary])]) #Stores the probability
+            emission[queary][np.argmax(emission[queary])] = 0 #Removes the probability
 
 
+        for j in range(0,3):
+            emission[queary][np.argmax(emission[queary][path[j]])] = temp[j] #Restore Emissions
 
+
+        guess = []
+
+        for j in range(0,3):
+
+            if x[path[j]] in novel:
+                state = 0; #Novel
+                novel.remove(corpus[i])
+                previous.append(corpus[i])
+
+            elif x[path[j]] in previous:
+                state = 1 #Previous
+                previous.remove(corpus[i])
+                degree2.append(corpus[i])
+
+            elif x[path[j]] in degree2:
+                state = 2 #Degree2
+
+            else: #x[path[j]] has not been seen yet
+                state = 0 #Novel
+
+
+            if state == 0:
+                emmision_probability = 1/len(x)
+            else:
+                emmision_probability = [emission[queary][np.argmax(emission[queary])]]
+
+
+            guess.append(probability_sum + emmision_probability * transition[previous_state][state])
+
+            previous_state = state
+
+
+        guess_index = guess.index(max(guess))
+
+        print("The next word is: " + x[path[guess_index]])
 
     if choice == 3:
         print("Choice 3: Exit")
