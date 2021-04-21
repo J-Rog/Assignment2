@@ -97,6 +97,14 @@ while(True):
                 pass
             print(queary)
             word[0] = x[np.argmax(transition[queary])]
+
+            #Penalize duplicates
+            if word[0] in word_list:
+                temp = transition[queary][np.argmax(transition[queary])]
+                transition[queary][np.argmax(transition[queary])] = 0
+                word[0] = x[np.argmax(transition[queary])]
+                transition[queary][np.argmax(transition[queary])] = temp
+
             word_list.append(word[0])
 
         print("Your new text is: ", end = " ")
@@ -105,10 +113,6 @@ while(True):
             print(word_list[i] + " ", end = " ")
 
         print(" ")
-
-
-
-
 
 
     if choice == 2:
